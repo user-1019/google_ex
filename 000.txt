@@ -1,0 +1,28 @@
+const xl_location = 
+const doc_location = 
+const div_location =
+const doc_name = 
+
+function sender() {
+  const sheet = SpreadsheetApp.openById(xl_location).getSheetByName('data0'); 
+
+  const temp = DriveApp.getFileById(doc_location);
+  const folder = DriveApp.getFolderById(div_location);
+
+  const data = sheet.getDataRange().getValues();
+  const rows = data.slice(1);
+
+  rows.forEach((row, index)=>
+  {
+    const file = temp.makeCopy(folder);
+    const doc = DocumentApp.openById(file.getId());
+    const body = doc.getBody();
+    data[0].forEach((heading,i)=>{
+      const header1 = heading.toUpperCase();
+      body.replaceText(`${header1}`, row[i])
+      Logger.log(row[i])
+    })
+    doc.setName(index + doc_name);
+  })
+ 
+}
