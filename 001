@@ -1,0 +1,59 @@
+const xl_location = 
+const doc_location = 
+const div_location =
+const div_loc2 =
+
+
+function sender() {
+  var names = div_filenames() //이름 받아오기
+  var num = names.length; //이름 길이
+
+  // ------------------------------------------------------------------------- 위치 설정
+  const sheet = SpreadsheetApp.openById(xl_location).getSheetByName('data0'); 
+  const temp = DriveApp.getFileById(doc_location);
+  const folder = DriveApp.getFolderById(div_location);
+
+  //------------------------------------------------------------------ 입력 설정
+  const data = sheet.getDataRange().getValues();
+  const rows = data.slice(1);
+  i = 0
+  Logger.log(names)
+  Logger.log(num)
+  rows.forEach((row, index)=>
+  {
+  i = i+1;
+  Logger.log(names[num - i])
+    if (names[num - i] == row[2] + doc_name) //최종 수정된 일자 기준으로 정리함, 
+    {
+      Logger.log("실패")
+    }
+    else //동일하지 않은 경우
+    {
+      const file = temp.makeCopy(folder);  //파일 생성
+      const doc = DocumentApp.openById(file.getId()); //파일 위치 설정
+      const body = doc.getBody(); //파일 내용 읽어오기
+      data[0].forEach((heading,i)=>{
+        const header1 = heading.toUpperCase(); //사용하고자 하는 이름을 정렬
+        body.replaceText(`${header1}`, row[i]); //내용을 새로운 내용으로 변경
+      //Logger.log(row[i])
+      })
+      doc.setName(row[2] + doc_name); //생성한 파일을 새로운 이름으로 변경
+    }
+    }
+    
+  )
+}
+
+function div_filenames(){
+  var folder = DriveApp.getFolderById(div_loc2); //파일 위치
+  var list_names2 = []; //리스트
+  var files = folder.getFiles(); //폴더 내의 파일들 받아옴
+  while (files.hasNext()){ 
+    file = files.next();
+    var row = []
+    row.push(file.getName()) //파일들 전체 받아옴
+    list_names2.push(row); //리스트에 정리함
+  }
+
+  return list_names2
+}
